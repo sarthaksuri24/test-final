@@ -120,6 +120,6 @@ def index():
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = 'uploads'
-    app.config['DATABASE_FOLDER'] = "B:\coding\school projects\database"
+    app.config['DATABASE_FOLDER'] = "database"
     app.config['OUTPUT_FOLDER'] = 'matched_images'
     app.run(debug=True)
