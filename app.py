@@ -4,10 +4,25 @@ import shutil
 import face_recognition
 import zipfile
 import time
-
+from mega import Mega
 
 app = Flask(__name__)
 
+mega = Mega()
+
+# Replace these with your Mega credentials
+MEGA_EMAIL = '8esarthaksuri+1234@gmail.com'
+MEGA_PASSWORD = 'kcis@school'
+
+def login_to_mega():
+    m = mega.login(MEGA_EMAIL, MEGA_PASSWORD)
+    return m
+
+def download_from_mega(file_name, output_folder):
+    m = login_to_mega()
+    file = m.find(file_name)
+    if file:
+        m.download(file, output_folder)
 
 def extract_face_encodings(image_path):
 
@@ -68,55 +83,27 @@ def compare_faces(input_image, database_folder, output_folder):
 
     return matches
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-   
-    status = ''  # Initialize status
-    error = None
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            error = "No file part"
-        else:
-            files = request.files.getlist('file')
-            matches_list = []
+# Your existing route for the Flask web app
 
+# Add a new route for downloading images from Mega and providing as a zip file
+@app.route('/download_faces', methods=['GET'])
+def download_faces():
+    zip_file_path = os.path.join(app.config['OUTPUT_FOLDER'], 'matched_images.zip')
+
+    # Download images from Mega
+    download_from_mega('your_file_name.jpg', app.config['OUTPUT_FOLDER'])  # Replace 'your_file_name.jpg' with actual filename
+
+    # Create a zip file
+    with zipfile.ZipFile(zip_file_path, 'w') as zipf:
+        for root, dirs, files in os.walk(app.config['OUTPUT_FOLDER']):
             for file in files:
-                if file.filename == '':
-                    continue
+                if file.endswith('.jpg') or file.endswith('.png'):  # Only add image files
+                    zipf.write(os.path.join(root, file), file)
 
-                filename = file.filename
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    # Provide zip file as downloadable link
+    return send_file(zip_file_path, as_attachment=True)
 
-                # Create the 'uploads' directory if it doesn't exist
-                if not os.path.exists(app.config['UPLOAD_FOLDER']):
-                    os.makedirs(app.config['UPLOAD_FOLDER'])
-                file.save(file_path)
-                # Update status
-                status = 'Processing...'
-                matches = compare_faces(file_path, app.config['DATABASE_FOLDER'], app.config['OUTPUT_FOLDER'])
-                matches_list.append(matches)
-
-            # Create zip file
-            zip_file_path = os.path.join(app.config['OUTPUT_FOLDER'], 'matched_images.zip')
-            with zipfile.ZipFile(zip_file_path, 'w') as zipf:
-                for root, dirs, files in os.walk(app.config['OUTPUT_FOLDER']):
-                    for file in files:
-                        if file.endswith('.jpg') or file.endswith('.png'):  # Only add image files
-                            zipf.write(os.path.join(root, file), file)
-
-            # Update status
-            status = 'Creating download file...'
-            time.sleep(1)
-            # Provide zip file as downloadable link
-            response = send_file(zip_file_path, as_attachment=True)
-            
-            return response
-            
-
-
-    return render_template('index.html', status=status, error=error)
-   
-
+# Your existing code for running the Flask app
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = 'uploads'
