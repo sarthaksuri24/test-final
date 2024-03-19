@@ -16,8 +16,16 @@ WORKDIR /usr/src/app
 # Copy the dependencies file to the working directory
 COPY requirements.txt .
 
+# Copy the prebuilt dlib binary to the working directory
+COPY dlib-19.24.1-cp311-cp311-win_amd64.whl .
+
+# Install the prebuilt dlib binary
+RUN pip install --no-cache-dir dlib-19.24.1-cp311-cp311-win_amd64.whl
+
+
 # Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+
 
 # Copy the rest of the application code to the working directory
 COPY . .
