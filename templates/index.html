@@ -94,19 +94,32 @@
             margin-bottom: 20px;
         }
 
+        .download-button {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .download-button:hover {
+            background-color: #005f6b;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Face Recognition</h1>
         <div id="form-holder">
-            <form id="upload-form" method="POST" enctype="multipart/form-data">
+            <form id="upload-form" method="POST" enctype="multipart/form-data" action="/download_faces">
                 <label for="file">Choose image(s) to upload:</label><br>
                 <input type="file" name="file" id="file" accept="image/*" multiple required><br>
-                <button id="upload-button" type="submit">Upload</button>
+                <button id="upload-button" type="submit">Upload &amp; Download</button>
             </form>
         </div>
-        <div id="status-box">{{ status }}</div>
+        <div id="status-box"></div>
         <div id="results">
             <!-- Result messages will be displayed here -->
         </div>
@@ -115,7 +128,7 @@
     <script>
         document.getElementById('upload-form').addEventListener('submit', function() {
             document.getElementById('upload-button').disabled = true;
-            document.getElementById('status-box').innerText = 'Uploading...';
+            document.getElementById('status-box').innerText = 'Uploading and preparing download...';
         });
     </script>
 </body>
