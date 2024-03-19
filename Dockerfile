@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -17,8 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Expose the port gunicorn will listen on (optional)
-# EXPOSE 8000
+# Expose the port gunicorn will listen on
+EXPOSE 8000
 
 # Define the command to run your application using gunicorn
 CMD ["gunicorn", "app:app"]
