@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system-level dependencies
 RUN apt-get update && \
-    apt-get install -y cmake && \
+    apt-get install -y build-essential cmake && \
     apt-get clean
 
 # Set the working directory in the container
